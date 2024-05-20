@@ -44,14 +44,16 @@ resource "aws_internet_gateway" "igw" {
 
 // Nat Gateway
 resource "aws_eip" "main" {
+  count = 3
 
 }
 
 
 
 resource "aws_nat_gateway" "ngw" {
-  allocation_id = aws_eip.main.id
-  subnet_id     = aws_subnet.public[0].id
+  count = 3
+  allocation_id = element (aws_eip.main.*.id , count.index)
+  subnet_id     = element (aws_subnet.public.*.id , count.index)
 
   tags = {
     Name = "nat-gw"
@@ -61,6 +63,7 @@ resource "aws_nat_gateway" "ngw" {
 // Public route table 
 
 resource "aws_route_table" "public_rt" {
+  count = 3
   vpc_id = aws_vpc.main.id
 
   tags = {
@@ -70,6 +73,7 @@ resource "aws_route_table" "public_rt" {
 
 // Private Route Table
 resource "aws_route_table" "private_rt" {
+  count = 3
   vpc_id = aws_vpc.main.id
 
 
@@ -81,29 +85,29 @@ resource "aws_route_table" "private_rt" {
 resource "aws_route_table_association" "public_route_assoication" {
   count = 3
   subnet_id = element( aws_subnet.public.*.id, count.index)
-  route_table_id = aws_route_table.public_rt.id
+  route_table_id = element(aws_route_table.public_rt.*.id , count.index)
+
 }
-
-
 resource "aws_route_table_association" "private_route_assoication" {
   count = 3
   subnet_id = element( aws_subnet.private.*.id, count.index)
-  route_table_id = aws_route_table.private_rt.id
+  route_table_id = element(aws_route_table.private_rt.*.id , count.index)
 }
 
 
-// Adding internet gw to route 
-
+// Adding Internet Gateway to Public Route Tables
 resource "aws_route" "igw_route" {
-  route_table_id            = aws_route_table.public_rt.id
-  destination_cidr_block    = "0.0.0.0/0"
-  gateway_id = aws_internet_gateway.igw.id 
+  count = 3
+  route_table_id         = element(aws_route_table.public_rt.*.id, count.index)
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.igw.id
 }
 
-// adding Nat gw to Route 
 
+// Adding NAT Gateways to Private Route Tables
 resource "aws_route" "ngw_route" {
-  route_table_id            = aws_route_table.private_rt.id
-  destination_cidr_block    = "0.0.0.0/0"
-  gateway_id =  aws_nat_gateway.ngw.id 
+  count = 3
+  route_table_id         = element(aws_route_table.private_rt.*.id, count.index)
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = element(aws_nat_gateway.ngw.*.id, count.index)
 }
