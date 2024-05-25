@@ -13,8 +13,9 @@ resource "aws_instance" "web" {
 
 connection {
     type        = "ssh"
-    user        = "ubuntu"  # Adjust based on the target instance's OS
-    private_key = file("~/.ssh/id_rsa")  # Path to your private SSH key file
-    host        = self.public_ip  # Assuming this is part of an AWS resource block
+    user        = "ec2-user"
+    private_key = file("~/.ssh/id_rsa") 
+    host        = self.public_ip 
   }
 }
+

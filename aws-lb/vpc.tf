@@ -1,5 +1,5 @@
 // VPC creation
-resource "aws_vpc" "main" {
+resource "aws_vpc" "mailon" {
   cidr_block       = "10.0.0.0/16"
 
 

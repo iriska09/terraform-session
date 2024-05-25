@@ -1,4 +1,5 @@
-sudo yum update
+#!/bin/bash
+sudo yum update -y
 
 sudo yum install -y apache2 mysql-client php libapache2-mod-php php-mysql
 

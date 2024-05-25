@@ -20,3 +20,4 @@ variable "ports" {
     default = [22, 3306, 443, 80  ]
   
 }
+

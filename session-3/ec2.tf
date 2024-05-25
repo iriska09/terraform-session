@@ -9,6 +9,6 @@ resource "aws_instance" "web" {
   }
 }
 
-// Syntax :
-// How to referrence to Input Variable 
-// var.variable_name
+# // Syntax :
+# // How to referrence to Input Variable 
+# // var.variable_name
